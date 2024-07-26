@@ -5,7 +5,9 @@ import * as TWEEN from "@tweenjs/tween.js";
 class ThreeJSContainer {
     private scene: THREE.Scene;
     private light: THREE.Light;
-    private cloud: THREE.Points;
+    private cloudR: THREE.Points;
+    private cloudG: THREE.Points;
+    private cloudB: THREE.Points;
 
     constructor() {
 
@@ -70,72 +72,146 @@ class ThreeJSContainer {
         }
 
         // パーティクルの作成
-        const geometry = new THREE.BufferGeometry();
-        // マテリアルの作成
-        //const textureLoader = new THREE.TextureLoader();
-        const material = new THREE.PointsMaterial({
+        const geometryR = new THREE.BufferGeometry();
+        const geometryG = new THREE.BufferGeometry();
+        const geometryB = new THREE.BufferGeometry();
+
+
+        // マテリアルの作成 赤
+        const materialR = new THREE.PointsMaterial({
             size: 1,
             map: generateSprite(255, 0, 0),
             transparent: true,
             blending: THREE.AdditiveBlending,
             depthWrite: false,
         });
+        // マテリアルの作成 緑
+        const materialG = new THREE.PointsMaterial({
+            size: 1,
+            map: generateSprite(0, 255, 0),
+            transparent: true,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+        });
+        // マテリアルの作成 青
+        const materialB = new THREE.PointsMaterial({
+            size: 1,
+            map: generateSprite(0, 0, 255),
+            transparent: true,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+        });
+
 
         const particleNum = 500; // パーティクルの数
-        const positions = new Float32Array(particleNum * 3);
+        const positionsR = new Float32Array(particleNum * 3);
+        const positionsG = new Float32Array(particleNum * 3);
+        const positionsB = new Float32Array(particleNum * 3);
 
         let particleIndex = 0;
         for (let i = 0; i < particleNum; ++i) {
-            positions[particleIndex++] = 0; // x座標
-            positions[particleIndex++] = 0; // y座標
-            positions[particleIndex++] = 0; // z座標
+            positionsR[particleIndex++] = 0; // x座標
+            positionsR[particleIndex++] = 0; // y座標
+            positionsR[particleIndex++] = 0; // z座標
+
+            positionsG[particleIndex++] = 0; // x座標
+            positionsG[particleIndex++] = 0; // y座標
+            positionsG[particleIndex++] = 0; // z座標
+
+            positionsB[particleIndex++] = 0; // x座標
+            positionsB[particleIndex++] = 0; // y座標
+            positionsB[particleIndex++] = 0; // z座標
         }
 
         // THREE.Pointsの作成
-        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometryR.setAttribute('position', new THREE.BufferAttribute(positionsR, 3));
+        // THREE.Pointsの作成
+        geometryG.setAttribute('position', new THREE.BufferAttribute(positionsG, 3));
+        // THREE.Pointsの作成
+        geometryB.setAttribute('position', new THREE.BufferAttribute(positionsB, 3));
         // シーンへの追加
-        this.cloud = new THREE.Points(geometry, material);
-        this.scene.add(this.cloud);
+        this.cloudR = new THREE.Points(geometryR, materialR);
+        this.cloudG = new THREE.Points(geometryG, materialG);
+        this.cloudB = new THREE.Points(geometryB, materialB);
+        this.scene.add(this.cloudR);
+        this.scene.add(this.cloudG);
+        this.scene.add(this.cloudB);
 
 
-        // それぞれのパーティクルのアニメーションを作成
+        // それぞれの花火のアニメーションを作成
         for (let i = 0; i < particleNum; ++i) {
-
             // Tweenでコントロールする変数の定義
-            let tweeninfo = { x: 0.0, y: 5.0, z: 0.0, index: i }; // tweenでコントロールする変数の定義
+            let tweeninfoR = { x: -8.0, y: 3.0, z: 5.0, index: i }; // tweenでコントロールする変数の定義
+            let tweeninfoG = { x: 0.0, y: 5.0, z: 0.0, index: i }; // tweenでコントロールする変数の定義
+            let tweeninfoB = { x: 8.0, y: 2.0, z: 5.0, index: i }; // tweenでコントロールする変数の定義
 
             //  Tweenでパラメータの更新の際に呼び出される関数
             let updatePosition = () => {
-                let geometry = <THREE.BufferGeometry>this.cloud.geometry;
-                let positions = geometry.getAttribute('position'); // 座標データ
+                let geometryR = <THREE.BufferGeometry>this.cloudR.geometry;
+                let geometryG = <THREE.BufferGeometry>this.cloudG.geometry;
+                let geometryB = <THREE.BufferGeometry>this.cloudB.geometry;
+                let positionsR = geometryR.getAttribute('position'); // 座標データ
+                let positionsG = geometryG.getAttribute('position'); // 座標データ
+                let positionsB = geometryB.getAttribute('position'); // 座標データ
 
-                positions.setX(tweeninfo.index, tweeninfo.x);
-                positions.setY(tweeninfo.index, tweeninfo.y);
-                positions.setZ(tweeninfo.index, tweeninfo.z);
+                positionsR.setX(tweeninfoR.index, tweeninfoR.x);
+                positionsR.setY(tweeninfoR.index, tweeninfoR.y);
+                positionsR.setZ(tweeninfoR.index, tweeninfoR.z);
+                positionsG.setX(tweeninfoG.index, tweeninfoG.x);
+                positionsG.setY(tweeninfoG.index, tweeninfoG.y);
+                positionsG.setZ(tweeninfoG.index, tweeninfoG.z);
+                positionsB.setX(tweeninfoB.index, tweeninfoB.x);
+                positionsB.setY(tweeninfoB.index, tweeninfoB.y);
+                positionsB.setZ(tweeninfoB.index, tweeninfoB.z);
 
-                positions.needsUpdate = true;
+                positionsR.needsUpdate = true;
+                positionsG.needsUpdate = true;
+                positionsB.needsUpdate = true;
             }
 
-            // 球面上の座標値の作成（遷移先の作成）
+            // 球面上の座標値
             const u = Math.random() * 2 * Math.PI;
             const v = Math.random() * 2 * Math.PI - Math.PI / 2;
             const r = 5;
-            const toX = r*Math.cos(u)*Math.cos(v);
-            const toY = r*Math.sin(u)*Math.cos(v)+5;
-            const toZ = r*Math.sin(v);
+            const toX = r * Math.cos(u) * Math.cos(v);
+            const toY = r * Math.sin(u) * Math.cos(v);
+            const toZ = r * Math.sin(v);
 
             // Tweenの作成 変化の仕方の変更
-            let tweenUP = new TWEEN.Tween(tweeninfo).to({ x: 0.0, y: 5.0, z: 0.0 }, 1000).easing(TWEEN.Easing.Circular.Out).onUpdate(updatePosition);
-            let tween = new TWEEN.Tween(tweeninfo).to({ x: toX, y: toY, z: toZ }, 1000).easing(TWEEN.Easing.Circular.Out).onUpdate(updatePosition);
-            let tweenDOWN = new TWEEN.Tween(tweeninfo).to({ x: 0.0, y: 5.0, z: 0.0 }, 1000).easing(TWEEN.Easing.Circular.Out).onUpdate(updatePosition);
-            let tweenBack = new TWEEN.Tween(tweeninfo).to({ x: 0.0, y: 0.0, z: 0.0 }, 1000).easing(TWEEN.Easing.Circular.Out).onUpdate(updatePosition);
+            let tweenUpR = new TWEEN.Tween(tweeninfoR).to({ x: -8.0, y: 3.0, z: 5.0 }, 1000).easing(TWEEN.Easing.Circular.Out).onUpdate(updatePosition);
+            let tweenOpenR = new TWEEN.Tween(tweeninfoR).to({ x: toX - 8.0, y: toY + 3.0, z: toZ + 5.0 }, 1000).easing(TWEEN.Easing.Circular.Out).onUpdate(updatePosition);
+            let tweenBackR = new TWEEN.Tween(tweeninfoR).to({ x: -8.0, y: 3.0, z: 5.0 }, 1000).easing(TWEEN.Easing.Circular.Out).onUpdate(updatePosition);
+            let tweenDownR = new TWEEN.Tween(tweeninfoR).to({ x: -8.0, y: 0.0, z: 5.0 }, 1000).easing(TWEEN.Easing.Circular.Out).onUpdate(updatePosition);
 
-            tweenUP.chain(tween); // アニメーションを接続
-            tween.chain(tweenDOWN); // アニメーションを接続
-            tweenDOWN.chain(tweenBack); // アニメーションを接続
-            tweenBack.chain(tweenUP); // アニメーションを接続
+            let tweenUpG = new TWEEN.Tween(tweeninfoG).to({ x: 0.0, y: 5.0, z: 0.0 }, 1000).easing(TWEEN.Easing.Circular.Out).onUpdate(updatePosition);
+            let tweenOpenG = new TWEEN.Tween(tweeninfoG).to({ x: toX, y: toY + 5.0, z: toZ }, 1000).easing(TWEEN.Easing.Circular.Out).onUpdate(updatePosition);
+            let tweenBackG = new TWEEN.Tween(tweeninfoG).to({ x: 0.0, y: 5.0, z: 0.0 }, 1000).easing(TWEEN.Easing.Circular.Out).onUpdate(updatePosition);
+            let tweenDownG = new TWEEN.Tween(tweeninfoG).to({ x: 0.0, y: 0.0, z: 0.0 }, 1000).easing(TWEEN.Easing.Circular.Out).onUpdate(updatePosition);
 
-            tween.start();          // アニメーションの開始
+            let tweenUpB = new TWEEN.Tween(tweeninfoB).to({ x: 8.0, y: 2.0, z: 5.0 }, 1000).easing(TWEEN.Easing.Circular.Out).onUpdate(updatePosition);
+            let tweenOpenB = new TWEEN.Tween(tweeninfoB).to({ x: toX + 8.0, y: toY + 2.0, z: toZ + 5.0}, 1000).easing(TWEEN.Easing.Circular.Out).onUpdate(updatePosition);
+            let tweenBackB = new TWEEN.Tween(tweeninfoB).to({ x: 8.0, y: 2.0, z: 5.0 }, 1000).easing(TWEEN.Easing.Circular.Out).onUpdate(updatePosition);
+            let tweenDownB = new TWEEN.Tween(tweeninfoB).to({ x: 8.0, y: 0.0, z: 5.0 }, 1000).easing(TWEEN.Easing.Circular.Out).onUpdate(updatePosition);
+
+            tweenUpR.chain(tweenOpenR); // アニメーションを接続
+            tweenOpenR.chain(tweenBackR); // アニメーションを接続
+            tweenBackR.chain(tweenDownR); // アニメーションを接続
+            tweenDownR.chain(tweenUpR); // アニメーションを接続
+
+            tweenUpG.chain(tweenOpenG); // アニメーションを接続
+            tweenOpenG.chain(tweenBackG); // アニメーションを接続
+            tweenBackG.chain(tweenDownG); // アニメーションを接続
+            tweenDownG.chain(tweenUpG); // アニメーションを接続
+
+            tweenUpB.chain(tweenOpenB); // アニメーションを接続
+            tweenOpenB.chain(tweenBackB); // アニメーションを接続
+            tweenBackB.chain(tweenDownB); // アニメーションを接続
+            tweenDownB.chain(tweenUpB); // アニメーションを接続
+
+
+            tweenUpR.start();          // アニメーションの開始
+            tweenOpenG.start();          // アニメーションの開始
+            tweenDownB.start();          // アニメーションの開始
         }
 
 
@@ -148,7 +224,7 @@ class ThreeJSContainer {
         // 毎フレームのupdateを呼んで，更新
         // reqestAnimationFrame により次フレームを呼ぶ
         let update: FrameRequestCallback = (time) => {
-            
+
             requestAnimationFrame(update);
             TWEEN.update();//追加分
         }
@@ -162,6 +238,6 @@ window.addEventListener("DOMContentLoaded", init);
 function init() {
     let container = new ThreeJSContainer();
 
-    let viewport = container.createRendererDOM(640, 480, new THREE.Vector3(0, 15, 15));
+    let viewport = container.createRendererDOM(640, 480, new THREE.Vector3(0, 0, 20));
     document.body.appendChild(viewport);
 }
